@@ -5,14 +5,23 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { validateSignup } from "@/utils/validation";
-import { formVariants, buttonVariants } from "@/utils/animations";
+
+const formVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const buttonVariants = {
+  hover: { scale: 1.05, transition: { duration: 0.2 } },
+  tap: { scale: 0.95 },
+};
 
 export default function Signup() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    password: "",
     phone: "",
+    password: "",
   });
   const [errors, setErrors] = useState({});
   const router = useRouter();
@@ -26,7 +35,6 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form data using Joi
     const validationErrors = validateSignup(formData);
     if (validationErrors) {
       setErrors(validationErrors);
@@ -40,12 +48,13 @@ export default function Signup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+
       if (res.ok) {
         toast.success("Signup successful! Redirecting to login...");
         setTimeout(() => router.push("/login"), 1500);
       } else {
-        const errorData = await res.json();
-        toast.error(errorData.error || "Signup failed. Try again.");
+        const error = await res.json();
+        toast.error(error.message || "Signup failed.");
       }
     } catch (error) {
       toast.error("Error: " + error.message);
@@ -53,15 +62,15 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4 sm:px-6 lg:px-8 pt-20">
+      <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
       <motion.div
-        className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md"
+        className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md"
         variants={formVariants}
         initial="hidden"
         animate="visible"
       >
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-6">
           Sign Up
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -72,13 +81,13 @@ export default function Signup() {
               placeholder="Username"
               value={formData.username}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
                 errors.username ? "border-red-500" : ""
               }`}
               required
             />
             {errors.username && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">
                 {errors.username}
               </p>
             )}
@@ -90,14 +99,31 @@ export default function Signup() {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
                 errors.email ? "border-red-500" : ""
               }`}
               required
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">
                 {errors.email}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              type="text"
+              name="phone"
+              placeholder="Phone Number (optional)"
+              value={formData.phone}
+              onChange={handleChange}
+              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
+                errors.phone ? "border-red-500" : ""
+              }`}
+            />
+            {errors.phone && (
+              <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">
+                {errors.phone}
               </p>
             )}
           </div>
@@ -108,37 +134,20 @@ export default function Signup() {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
                 errors.password ? "border-red-500" : ""
               }`}
               required
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">
                 {errors.password}
-              </p>
-            )}
-          </div>
-          <div>
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number (Optional)"
-              value={formData.phone}
-              onChange={handleChange}
-              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.phone ? "border-red-500" : ""
-              }`}
-            />
-            {errors.phone && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {errors.phone}
               </p>
             )}
           </div>
           <motion.button
             type="submit"
-            className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
@@ -146,7 +155,7 @@ export default function Signup() {
             Sign Up
           </motion.button>
         </form>
-        <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
+        <p className="mt-4 text-center text-gray-600 dark:text-gray-300 text-sm sm:text-base">
           Already have an account?{" "}
           <Link href="/login" className="text-blue-600 hover:underline">
             Login

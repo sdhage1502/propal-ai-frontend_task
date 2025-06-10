@@ -5,7 +5,16 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { validateLogin } from "@/utils/validation";
-import { formVariants, buttonVariants } from "@/utils/animations";
+
+const formVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const buttonVariants = {
+  hover: { scale: 1.05, transition: { duration: 0.2 } },
+  tap: { scale: 0.95 },
+};
 
 export default function Login() {
   const [formData, setFormData] = useState({ loginId: "", password: "" });
@@ -43,7 +52,7 @@ export default function Login() {
 
       if (user) {
         localStorage.setItem("user", JSON.stringify(user));
-        toast.success("Login successful! Redirecting...");
+        toast.success("Login successful! Redirecting to dashboard...");
         setTimeout(() => router.push("/dashboard"), 1500);
       } else {
         toast.error("Invalid credentials.");
@@ -54,15 +63,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4 sm:px-6 lg:px-8 pt-20">
+      <Toaster position="top-center" toastOptions={{ duration: 3000 }} />
       <motion.div
-        className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md"
+        className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md"
         variants={formVariants}
         initial="hidden"
         animate="visible"
       >
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-6">
           Login
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,13 +82,13 @@ export default function Login() {
               placeholder="Email or Username"
               value={formData.loginId}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
                 errors.loginId ? "border-red-500" : ""
               }`}
               required
             />
             {errors.loginId && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">
                 {errors.loginId}
               </p>
             )}
@@ -91,20 +100,20 @@ export default function Login() {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base ${
                 errors.password ? "border-red-500" : ""
               }`}
               required
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">
                 {errors.password}
               </p>
             )}
           </div>
           <motion.button
             type="submit"
-            className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
@@ -112,7 +121,7 @@ export default function Login() {
             Login
           </motion.button>
         </form>
-        <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
+        <p className="mt-4 text-center text-gray-600 dark:text-gray-300 text-sm sm:text-base">
           Don’t have an account?{" "}
           <Link href="/signup" className="text-blue-600 hover:underline">
             Sign Up
