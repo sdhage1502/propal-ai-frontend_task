@@ -23,7 +23,7 @@ export default function Navbar() {
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
   return (
-    <motion.nav
+    <nav
       className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-md z-50"
       variants={navbarVariants}
       initial="hidden"
@@ -105,6 +105,6 @@ export default function Navbar() {
           </div>
         </motion.div>
       </div>
-    </motion.nav>
+    </nav>
   );
 }
