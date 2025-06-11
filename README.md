@@ -96,7 +96,7 @@ Validation: Joi
 Animations: Framer Motion
 Notifications: React Hot Toast
 Deployment: Vercel
-
+---
 File Structure
 PROPAL-AI-FRONTEND/
 ├── public/
@@ -143,7 +143,7 @@ PROPAL-AI-FRONTEND/
 ├── postcss.config.mjs
 ├── README.md
 └── tailwind.config.js
-
+---
 Setup Instructions
 Prerequisites
 
