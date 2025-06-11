@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Sidebar from "../../components/Sidebar";
 import sttData from "../../../public/stt.json";
 import Link from "next/link";
+import { Toaster } from "react-hot-toast";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -24,27 +25,28 @@ export default function Dashboard() {
     }
   }, [router]);
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   const providerName = sttSettings
     ? sttData.stt.find((p) => p.value === sttSettings.provider)?.name || "Not configured"
     : "Not configured";
+
   const modelName = sttSettings
     ? sttData.stt
-        .find((p) => p.value === sttSettings.provider)
-        ?.models.find((m) => m.value === sttSettings.model)?.name || "Not configured"
+      .find((p) => p.value === sttSettings.provider)
+      ?.models.find((m) => m.value === sttSettings.model)?.name || "Not configured"
     : "Not configured";
+
   const languageName = sttSettings
     ? sttData.stt
-        .find((p) => p.value === sttSettings.provider)
-        ?.models.find((m) => m.value === sttSettings.model)
-        ?.languages.find((l) => l.value === sttSettings.language)?.name || "Not configured"
+      .find((p) => p.value === sttSettings.provider)
+      ?.models.find((m) => m.value === sttSettings.model)
+      ?.languages.find((l) => l.value === sttSettings.language)?.name || "Not configured"
     : "Not configured";
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      <Toaster position="top-center" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-18 pb-8">
         {/* Page Header */}
         <div className="mb-6">
@@ -56,7 +58,6 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Main Layout */}
         <div className="flex flex-col lg:flex-row lg:space-x-6 space-y-6 lg:space-y-0">
           {/* Sidebar */}
           <div className="lg:w-64">
@@ -87,7 +88,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Dashboard Overview */}
+            {/* Overview */}
             <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2">
                 Dashboard Overview
@@ -97,7 +98,7 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Shortcut Cards (Desktop Only) */}
+            {/* Shortcuts */}
             <div className="hidden lg:grid grid-cols-2 gap-6">
               <Link
                 href="/dashboard/agent"

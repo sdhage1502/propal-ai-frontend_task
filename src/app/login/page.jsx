@@ -6,9 +6,15 @@ import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { validateLogin } from "@/utils/validation";
 
-// Animation variants
-const formVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
-const buttonVariants = { hover: { scale: 1.05 }, tap: { scale: 0.95 } };
+const formVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const buttonVariants = {
+  hover: { scale: 1.05 },
+  tap: { scale: 0.95 },
+};
 
 export default function Login() {
   const [formData, setFormData] = useState({ loginId: "", password: "" });
@@ -36,21 +42,20 @@ export default function Login() {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const res = await fetch("/api/users", {
-        signal: controller.signal,
-      });
+      const res = await fetch("/api/users", { signal: controller.signal });
       clearTimeout(timeoutId);
 
       if (!res.ok) {
         const { error } = await res.json();
         throw new Error(error || "Failed to fetch users");
       }
-      const users = await res.json();
 
+      const users = await res.json();
       const { loginId, password } = formData;
       const isEmail = loginId.includes("@");
+
       const user = users.find((u) =>
         isEmail ? u.email === loginId && u.password === password : u.username === loginId && u.password === password
       );
@@ -63,7 +68,6 @@ export default function Login() {
         toast.error("Invalid credentials", { duration: 5000 });
       }
     } catch (error) {
-      console.error("Login error:", error.message);
       toast.error(`Error: ${error.message}`, { duration: 5000 });
     } finally {
       setIsLoading(false);
@@ -121,7 +125,10 @@ export default function Login() {
           </motion.button>
         </form>
         <p className="mt-4 text-center text-gray-600 dark:text-gray-300 text-sm">
-          Don’t have an account? <Link href="/signup" className="text-[#5CE5BC] hover:underline">Sign Up</Link>
+          Don’t have an account?{" "}
+          <Link href="/signup" className="text-[#5CE5BC] hover:underline">
+            Sign Up
+          </Link>
         </p>
       </motion.div>
     </div>
