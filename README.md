@@ -4,7 +4,7 @@ This project, PROPAL-AI-FRONTEND, is a Next.js application developed as part of 
 The application meets all task requirements, including form handling, authentication, dynamic dropdowns, and data persistence using Firebase Firestore. Additionally, it incorporates optional features like dark mode, smooth animations, and toast notifications for enhanced user experience.
 Live Demo
 
-- Deployed URL: propal-ai-frontend-task.vercel.app
+- Deployed URL: [propal-ai-frontend-task.vercel.app](https://propal-ai-frontend-task.vercel.app/)
 - Repository:[ https://github.com/your-username/PROPAL-AI-FRONTEND (Replace with your GitHub repository URL)](https://github.com/sdhage1502/propal-ai-frontend_task)
 
 Features
