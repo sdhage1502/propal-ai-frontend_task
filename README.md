@@ -5,7 +5,7 @@ The application meets all task requirements, including form handling, authentica
 Live Demo
 
 - Deployed URL: [propal-ai-frontend-task.vercel.app](https://propal-ai-frontend-task.vercel.app/)
-- Repository:[ https://github.com/your-username/PROPAL-AI-FRONTEND (Replace with your GitHub repository URL)](https://github.com/sdhage1502/propal-ai-frontend_task)
+- Repository:[ https://github.com/your-username/PROPAL-AI-FRONTEND ](https://github.com/sdhage1502/propal-ai-frontend_task)
 
 Features
 Required Features
