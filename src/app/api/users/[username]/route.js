@@ -1,5 +1,4 @@
-
-import { db } from "@/lib/firebase"; // Fixed typo: firbase → firebase
+import { db } from "../../../../lib/firbase"; 
 import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 import { validateSignup } from "@/utils/validation";
 
