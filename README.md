@@ -356,7 +356,7 @@ This project fulfills all requirements of the proPAL AI Frontend Engineering Int
 
 Additionally, it includes optional features like dark mode, animations, and toast notifications, demonstrating attention to detail and user experience.
 
-**Submitted by**: [Your Name]  
+**Submitted by**: Shreyash Dhage  
 **Date**: June 11, 2025  
-**Email**: [your-email@example.com]  
-**GitHub**: [https://github.com/your-username](#)
+**Email**: sdhage1502@gmail.com 
+**GitHub**: https://github.com/sdhage1502/
