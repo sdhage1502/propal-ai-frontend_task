@@ -8,7 +8,7 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className="bg-white text-black dark:bg-black dark:text-white">
         <ThemeProviders>
-          <Navbar />
+          <Navbar/>
           {children}
         </ThemeProviders>
       </body>

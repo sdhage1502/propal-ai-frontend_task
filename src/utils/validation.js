@@ -1,158 +1,124 @@
 import Joi from "joi";
 
-// List of allowed single-level TLDs for email validation
+// Allowed TLDs for email validation
 const allowedTLDs = [
-  "com",
-  "org",
-  "net",
-  "biz",
-  "co",
-  "in",
-  "edu",
-  "gov",
-  "mil",
-  "info",
-  "io",
-  "me",
-  "us",
-  "uk",
+  "com", "org", "net", "biz", "co", "in", "edu", "gov", "mil", "info", "io", "me", "us", "uk",
 ];
-
-// Additional allowed multi-level domains (e.g., co.in, org.in)
 const allowedMultiLevelDomains = ["co.in", "org.in", "co.uk", "org.uk", "ac.in", "edu.in"];
 
-// Custom email validation function to handle multi-level domains
-const validateEmailWithCustomDomains = (value, helpers) => {
+// Custom email validation
+const validateEmail = (value, helpers) => {
   const emailSchema = Joi.string().email({ tlds: { allow: allowedTLDs } });
-  const { error: emailError } = emailSchema.validate(value);
-
-  if (emailError) {
+  const { error } = emailSchema.validate(value);
+  if (error) {
     const domain = value.split("@")[1];
-    const isMultiLevelDomain = allowedMultiLevelDomains.some((multiLevel) =>
-      domain.endsWith(`.${multiLevel}`)
-    );
-    if (!isMultiLevelDomain) {
-      return helpers.message(
-        `Please enter a valid email address with an allowed domain (e.g., .com, .in, .co.in)`
-      );
+    if (!allowedMultiLevelDomains.some((multiLevel) => domain.endsWith(`.${multiLevel}`))) {
+      return helpers.message("Invalid email domain (e.g., use .com, .in, .co.in)");
     }
   }
   return value;
 };
 
-// Shared password schema (used in all forms)
-const passwordSchema = Joi.string()
-  .min(8) // Increased minimum length to 8 for better security
-  .pattern(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-  )
-  .messages({
+// Shared schemas
+const schemas = {
+  username: Joi.string()
+    .min(3)
+    .max(30)
+    .pattern(/^[a-zA-Z0-9_-]+$/)
+    .invalid(".", "..", "", "/")
+    .required()
+    .messages({
+      "string.empty": "Username is required",
+      "string.min": "Username must be at least 3 characters",
+      "string.max": "Username must not exceed 30 characters",
+      "string.pattern.base": "Username can only contain letters, numbers, underscores, or hyphens",
+      "any.invalid": "Username cannot contain periods, slashes, or be empty",
+    }),
+  email: Joi.string().required().custom(validateEmail).messages({
+    "string.empty": "Email is required",
+  }),
+  phone: Joi.string()
+    .allow("")
+    .pattern(/^\+?[1-9]\d{1,14}$/)
+    .messages({
+      "string.pattern.base": "Invalid phone number (e.g., +1234567890)",
+    }),
+  signupPassword: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+    .required()
+    .messages({
+      "string.empty": "Password is required",
+      "string.min": "Password must be at least 8 characters",
+      "string.pattern.base": "Password must include uppercase, lowercase, number, and special character (@$!%*?&)",
+    }),
+  loginPassword: Joi.string().required().messages({
     "string.empty": "Password is required",
-    "string.min": "Password must be at least 8 characters long",
-    "string.pattern.base":
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
-  });
+  }),
+  updatePassword: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+    .messages({
+      "string.min": "New password must be at least 8 characters",
+      "string.pattern.base": "New password must include uppercase, lowercase, number, and special character (@$!%*?&)",
+    }),
+};
 
-// Shared username schema (used in Login and Signup)
-const usernameSchema = Joi.string()
-  .min(3)
-  .max(30)
-  .pattern(/^[a-zA-Z0-9_-]+$/)
-  .messages({
-    "string.empty": "Username is required",
-    "string.min": "Username must be at least 3 characters long",
-    "string.max": "Username must not exceed 30 characters",
-    "string.pattern.base":
-      "Username can only contain letters, numbers, underscores, and hyphens",
-  });
-
-// Shared phone schema (used in Signup)
-const phoneSchema = Joi.string()
-  .allow("")
-  .pattern(/^\+?[1-9]\d{1,14}$/)
-  .messages({
-    "string.pattern.base":
-      "Phone number must be a valid number (e.g., +1234567890 or 1234567890)",
-  });
-
-// Validation schema for the login form
+// Validation schemas
 export const loginSchema = Joi.object({
   loginId: Joi.string()
     .required()
+    .custom((value, helpers) => {
+      if (value.includes("@")) return validateEmail(value, helpers);
+      const { error } = schemas.username.validate(value);
+      if (error) return helpers.message(error.details[0].message);
+      return value;
+    })
     .messages({
-      "string.empty": "Email or Username is required",
+      "string.empty": "Email or username is required",
+    }),
+  password: schemas.loginPassword,
+});
+
+export const signupSchema = Joi.object({
+  username: schemas.username,
+  email: schemas.email,
+  phone: schemas.phone,
+  password: schemas.signupPassword,
+});
+
+export const profileUpdateSchema = Joi.object({
+  email: schemas.email,
+  oldPassword: Joi.string().allow(""),
+  newPassword: Joi.string()
+    .allow("")
+    .when("oldPassword", {
+      is: Joi.string().min(1),
+      then: schemas.updatePassword.required().messages({
+        "string.empty": "New password is required when old password is provided",
+      }),
     })
     .custom((value, helpers) => {
-      if (value.includes("@")) {
-        return validateEmailWithCustomDomains(value, helpers);
-      } else {
-        const { error } = usernameSchema.validate(value);
-        if (error) return helpers.message(error.details[0].message);
+      const { oldPassword } = helpers.state.ancestors[0];
+      if (oldPassword && value && value === oldPassword) {
+        return helpers.message("New password must differ from old password");
       }
       return value;
     }),
-  password: passwordSchema.required(),
 });
 
-// Validation schema for the signup form
-export const signupSchema = Joi.object({
-  username: usernameSchema.required(),
-  email: Joi.string()
-    .required()
-    .messages({
-      "string.empty": "Email is required",
-    })
-    .custom(validateEmailWithCustomDomains),
-  password: passwordSchema.required(),
-  phone: phoneSchema,
-});
-
-// Validation schema for profile updates
-export const profileUpdateSchema = Joi.object({
-  email: Joi.string()
-    .required()
-    .messages({
-      "string.empty": "Email is required",
-    })
-    .custom(validateEmailWithCustomDomains),
-  password: passwordSchema.allow(""), // Password is optional
-});
-
-// Function to validate the login form data
-export const validateLogin = (data) => {
-  const { error } = loginSchema.validate(data, { abortEarly: false });
+// Validation functions
+const validate = (schema, data) => {
+  const { error } = schema.validate(data, { abortEarly: false });
   if (error) {
-    const errors = {};
-    error.details.forEach((detail) => {
-      errors[detail.path[0]] = detail.message;
-    });
-    return errors;
+    return error.details.reduce((acc, detail) => ({
+      ...acc,
+      [detail.path[0]]: detail.message,
+    }), {});
   }
   return null;
 };
 
-// Function to validate the signup form data
-export const validateSignup = (data) => {
-  const { error } = signupSchema.validate(data, { abortEarly: false });
-  if (error) {
-    const errors = {};
-    error.details.forEach((detail) => {
-      errors[detail.path[0]] = detail.message;
-    });
-    return errors;
-  }
-  return null;
-};
-
-// Function to validate the profile update form data
-export const validateProfileUpdate = (data) => {
-  const { error } = profileUpdateSchema.validate(data, { abortEarly: false });
-  if (error) {
-    const errors = {};
-    error.details.forEach((detail) => {
-      errors[detail.path[0]] = detail.message;
-    });
-    return errors;
-  }
-  return null;
-};
+export const validateLogin = (data) => validate(loginSchema, data);
+export const validateSignup = (data) => validate(signupSchema, data);
+export const validateProfileUpdate = (data) => validate(profileUpdateSchema, data);

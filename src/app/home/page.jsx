@@ -11,7 +11,7 @@ export default function Home() {
       </p>
       <Link
         href="/signup"
-        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
+        className="px-6 py-3 bg-[#5CE5BC] text-white rounded-lg hover:bg-[#92b9ae] transition-colors text-sm sm:text-base"
       >
         Get Started
       </Link>
